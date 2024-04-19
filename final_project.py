@@ -2,8 +2,14 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import mysql.connector
 import csv
-from farsi_tools import replace_ascii_digits_with_farsi
-from farsi_tools import standardize_persian_text
+
+
+mydb = mysql.connector.connect(
+    host="127.0.0.1",
+    user="root",
+    password="11071399",
+    database="truecar_all_cars"
+)
 
 url = 'https://www.truecar.com/used-cars-for-sale/listings/?buyOnline=true'
 
@@ -15,20 +21,31 @@ html_page = driver.page_source
 limit = 20
 soup = BeautifulSoup(html_page, 'html.parser')
 items = soup.find_all('div', attrs={'class': 'flex w-full flex-col'})[:limit]
+
+cursor = mydb.cursor()
+
 all_cars = []
 for item in items:
     car = []
-    name = item.find('div', attrs={'class': 'w-full truncate font-bold'}).text[5:]
+    brand = item.find('div', attrs={'class': 'w-full truncate font-bold'}).text[5:]
+    car.append(brand)
     price = item.find('h3', attrs='heading-4 normal-case flex items-center').text
-    performance = item.find('div', attrs={'class': 'flex items-center truncate text-xs'}).text
-    all_cars.append(car)
-    car.append(name)
-    car.append(performance)
     car.append(price)
+    performance = item.find('div', attrs={'class': 'flex items-center truncate text-xs'}).text
+    car.append(performance)
+    all_cars.append(car)
+    sql = "INSERT INTO car_informations (brand ,price, performance) VALUES (%s, %s, %s)"
+    val = (brand, price, performance)
+    cursor.execute(sql, val)
+    mydb.commit()
     # print(car)
+mydb.close()
 
 # print(all_cars)
 with open('all_cars.csv', 'a', newline='', ) as file:
     writer = csv.writer(file)
     for row in all_cars:
         writer.writerow(row)
+
+
+# with open('all_cars.csv','r', newline=''):
