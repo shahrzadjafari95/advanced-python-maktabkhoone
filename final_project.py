@@ -9,7 +9,7 @@ from sklearn.tree import DecisionTreeClassifier
 mydb = mysql.connector.connect(
     host="127.0.0.1",
     user="root",
-    password="11071399",
+    password="",
     database="truecar_all_cars"
 )
 cursor = mydb.cursor()
