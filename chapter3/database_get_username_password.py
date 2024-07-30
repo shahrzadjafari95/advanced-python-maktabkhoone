@@ -39,7 +39,7 @@ if __name__ == '__main__':
         if check(user_name):
             password = get_password()
             print(f'your email is {user_name} and password is {password}')
-            # if username and password is correct, we save these informations into the database
+            # if username and password is correct, we save these information into the database
             cursor = mydb.cursor()
             sql = "INSERT INTO user_information (username, password) VALUES (%s, %s)"
             val = (user_name, password)
